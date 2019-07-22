@@ -1,0 +1,93 @@
+service:
+  name: wcmui2
+plugins:
+  - serverless-python-requirements
+  #- serverless-domain-manager
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+  region: ap-northeast-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sts:AssumeRole
+      Resource: "*"
+
+  memorySize: 1024
+  timeout: 30
+  versionFunctions: false
+  reservedConcurrency: 5
+  logRetentionInDays: 30
+
+
+custom:
+  appName: wcmui2
+
+
+  pythonRequirements:
+    slim: true
+    dockerizePip: non-linux
+
+
+package:
+  individually: true
+
+resources:
+  - ${file(resources/s3.yaml)}
+  Resources:
+    ApiCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          HttpVersion: "http2"
+          Origins:
+            # I belive the problem is here
+            - DomainName:
+                Fn::Join:
+                  - ""
+                  - - ""
+                    - Ref: ApiGatewayRestApi
+                    - ".execute-api.${opt:region, self:provider.region}.amazonaws.com"
+              OriginPath: "/${self:provider.stage}"
+              Id: "lambdaid=${self:provider.stage}-${self:service}"
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: http-only
+          Enabled: 'true'
+          Aliases:
+            - "api-${self:provider.stage}-${self:service}.com"
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+            ## The origin id defined above
+            TargetOriginId: "lambdaid=${self:provider.stage}-${self:service}"
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ## The certificate to use when viewers use HTTPS to request objects.
+#          ViewerCertificate:
+#            AcmCertificateArn: "arn:aws:acm:us-east-1:<MY ACCOUNT>:certificate/<MY CERTIFICATE>"
+#            SslSupportMethod: sni-only
+#            MinimumProtocolVersion: TLSv1.1_2016
+#          Logging:
+#            IncludeCookies: 'false'
+#            Bucket: "<MY BUCKET>.s3.amazonaws.com"
+#            Prefix: "api-${self:provider.stage}-${self:service}"
+
+
+functions:
+  test:
+    handler: functions/test_lambda.lambda_handler
+    package:
+      include:
+        - functions/**
+    events:
+      - http:
+          path: /api/test
+          method: GET
+          cors: true

@@ -1,0 +1,16 @@
+Resources:
+  PandaLambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: panda
+      VpcId: ${self:custom.awsConf.data.AWS_VPC}
+      SecurityGroupIngress:
+      - IpProtocol: "-1"
+        FromPort: '0'
+        ToPort: '0'
+        CidrIp: "0.0.0.0/0"
+      SecurityGroupEgress:
+      - IpProtocol: "-1"
+        FromPort: '0'
+        ToPort: '0'
+        CidrIp: "0.0.0.0/0"

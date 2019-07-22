@@ -1,0 +1,38 @@
+Resources:
+  S3BucketWCMUI:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: test-wcm-ui
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins:
+              - '*'
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+
+  MyS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: S3BucketWCMUI
+    Properties:
+      Bucket:
+        Ref: S3BucketWCMUI
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: WCM UI
+          Effect: Allow
+          Principal: '*'
+          Action:
+            - s3:GetObject
+          Resource:
+            Fn::Join:
+              - ''
+              -
+                - Fn::GetAtt: [ S3BucketWCMUI, Arn ]
+                - '/*'
