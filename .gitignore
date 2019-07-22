@@ -10,3 +10,5 @@
 *.bak
 *.user.ini
 .idea
+.serverless
+node_modules
