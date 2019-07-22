@@ -33,9 +33,23 @@ custom:
 package:
   individually: true
 
+functions:
+  test:
+    handler: functions/test_lambda.lambda_handler
+    package:
+      include:
+        - functions/**
+    events:
+      - http:
+          path: /api/test
+          method: GET
+          cors: true
+
+
+
 resources:
   - ${file(resources/s3.yaml)}
-  Resources:
+  - Resources:
     ApiCloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
@@ -80,14 +94,3 @@ resources:
 #            Prefix: "api-${self:provider.stage}-${self:service}"
 
 
-functions:
-  test:
-    handler: functions/test_lambda.lambda_handler
-    package:
-      include:
-        - functions/**
-    events:
-      - http:
-          path: /api/test
-          method: GET
-          cors: true
