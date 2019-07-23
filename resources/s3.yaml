@@ -2,7 +2,7 @@ Resources:
   S3BucketWCMUI:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: test-wcm-ui
+      BucketName: test-wcm-ui-1
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
