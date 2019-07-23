@@ -19,16 +19,24 @@ Resources:
               HTTPSPort: 443
               OriginProtocolPolicy: http-only
         Enabled: 'true'
-        Aliases:
-          - "api-${self:provider.stage}-${self:service}.com"
+#        Aliases:
+#          - "api-${self:provider.stage}-${self:service}.com"
         DefaultCacheBehavior:
           AllowedMethods:
+            - DELETE
             - GET
             - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+
+          MaxTTL: 0
+          DefaultTTL: 0
           ## The origin id defined above
           TargetOriginId: "lambdaid=${self:provider.stage}-${self:service}"
           ForwardedValues:
-            QueryString: 'false'
+            QueryString: 'true'
             Cookies:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
