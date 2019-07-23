@@ -4,6 +4,7 @@ Resources:
     Properties:
       DistributionConfig:
         HttpVersion: "http2"
+        DefaultRootObject: index.html
         Origins:
           # I belive the problem is here
           - DomainName:
@@ -22,6 +23,7 @@ Resources:
           - DomainName: #define the s3 origin
               Fn::GetAtt: [ S3BucketWCMUI , "DomainName" ]
             Id: webpage
+            OriginPath: 'v1.0'
             S3OriginConfig:
               OriginAccessIdentity:
                 Ref: AWS::NoValue
@@ -65,15 +67,15 @@ Resources:
             ## The origin id defined above
             Compress: true
             ForwardedValues:
-              Headers: #define explicit headers, since API Gateway doesn't work otherwise
-                - Accept
-                - Referer
-                - Athorization
-                - Content-Type
+#              Headers: #define explicit headers, since API Gateway doesn't work otherwise
+#                - Accept
+#                - Referer
+#                - Athorization
+#                - Content-Type
               QueryString: true #to transfer get parameters to the gateway
             PathPattern: "/api/*" #path pattern after the Gateway stage identifier.
             TargetOriginId: 'lambdaid=${self:provider.stage}-${self:service}' #id of the orignin
-            ViewerProtocolPolicy: https-only #API Gateway only support https
+            ViewerProtocolPolicy: redirect-to-https #API Gateway only support https
 
 
         ## The certificate to use when viewers use HTTPS to request objects.
