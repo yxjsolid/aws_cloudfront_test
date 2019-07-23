@@ -51,35 +51,29 @@ Resources:
           TargetOriginId: 'webpage' #id of the orignin
 
         CacheBehaviors: #second the behavior for the API Gateway
-          AllowedMethods:
-            - DELETE
-            - GET
-            - HEAD
-            - OPTIONS
-            - PATCH
-            - POST
-            - PUT
+          - AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
 
-          MaxTTL: 0
-          DefaultTTL: 0
-          ## The origin id defined above
-          TargetOriginId: "lambdaid=${self:provider.stage}-${self:service}"
-          ForwardedValues:
-            QueryString: 'true'
-            Cookies:
-              Forward: none
-          ViewerProtocolPolicy: redirect-to-https
-          Compress: true
-          ForwardedValues:
-            Headers: #define explicit headers, since API Gateway doesn't work otherwise
-              - Accept
-              - Referer
-              - Athorization
-              - Content-Type
-            QueryString: true #to transfer get parameters to the gateway
-          PathPattern: "/api/*" #path pattern after the Gateway stage identifier.
-          TargetOriginId: 'lambdaid=${self:provider.stage}-${self:service}' #id of the orignin
-          ViewerProtocolPolicy: https-only #API Gateway only support https
+            MaxTTL: 0
+            DefaultTTL: 0
+            ## The origin id defined above
+            Compress: true
+            ForwardedValues:
+              Headers: #define explicit headers, since API Gateway doesn't work otherwise
+                - Accept
+                - Referer
+                - Athorization
+                - Content-Type
+              QueryString: true #to transfer get parameters to the gateway
+            PathPattern: "/api/*" #path pattern after the Gateway stage identifier.
+            TargetOriginId: 'lambdaid=${self:provider.stage}-${self:service}' #id of the orignin
+            ViewerProtocolPolicy: https-only #API Gateway only support https
 
 
         ## The certificate to use when viewers use HTTPS to request objects.
